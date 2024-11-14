@@ -17,7 +17,7 @@ import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.api.stages.types.Locatable.Located.LocatedBlock;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.utils.compatibility.Post1_13;
 
 public class BQBlocksManagerImplementation implements BQBlocksManager {

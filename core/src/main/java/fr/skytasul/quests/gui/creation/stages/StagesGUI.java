@@ -24,7 +24,7 @@ import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.api.stages.creation.*;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 import fr.skytasul.quests.utils.QuestUtils;

@@ -24,7 +24,7 @@ import fr.skytasul.quests.api.stages.options.StageOptionAutoRegister;
 import fr.skytasul.quests.api.stages.options.StageOptionCreator;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;

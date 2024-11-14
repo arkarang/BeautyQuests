@@ -14,7 +14,7 @@ import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.pools.QuestPool;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class PoolsManageGUI extends PagedGUI<QuestPool> {
 	

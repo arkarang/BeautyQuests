@@ -2,7 +2,7 @@ package fr.skytasul.quests.options;
 
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOptionRewards;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class OptionStartRewards extends QuestOptionRewards {
 	

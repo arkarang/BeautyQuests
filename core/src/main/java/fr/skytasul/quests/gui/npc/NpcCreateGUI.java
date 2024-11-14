@@ -20,7 +20,7 @@ import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCrea
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 
 public class NpcCreateGUI extends AbstractGui {

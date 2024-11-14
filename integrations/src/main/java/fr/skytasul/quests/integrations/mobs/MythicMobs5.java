@@ -20,7 +20,7 @@ import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import io.lumine.mythic.api.mobs.MythicMob;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderString;
 import io.lumine.mythic.bukkit.MythicBukkit;

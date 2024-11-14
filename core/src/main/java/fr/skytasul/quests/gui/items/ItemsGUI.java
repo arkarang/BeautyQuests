@@ -18,7 +18,7 @@ import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.utils.QuestUtils;
 
 public class ItemsGUI extends AbstractGui {

@@ -17,7 +17,7 @@ import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.utils.types.Title;
 
 public class TitleGUI extends AbstractGui {

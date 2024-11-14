@@ -16,7 +16,7 @@ import fr.skytasul.quests.api.gui.layout.LayoutedGUI.Builder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public final class NpcSelectGUI {
 

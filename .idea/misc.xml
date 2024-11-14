@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+      </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/v1_12_R1/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_15_R1/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_16_R1/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_16_R2/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_16_R3/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_17_R1/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_18_R1/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_18_R2/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_19_R1/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_19_R2/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_19_R3/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_9_R1/pom.xml" />
+        <option value="$PROJECT_DIR$/v1_9_R2/pom.xml" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_22" default="true" project-jdk-name="openjdk-22" project-jdk-type="JavaSDK" />
+</project>

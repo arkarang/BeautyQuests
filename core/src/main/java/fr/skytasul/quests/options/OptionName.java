@@ -3,7 +3,7 @@ package fr.skytasul.quests.options;
 import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOptionString;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class OptionName extends QuestOptionString {
 	

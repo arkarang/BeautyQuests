@@ -22,7 +22,7 @@ import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.InterruptingBranchException;
 import fr.skytasul.quests.api.rewards.RewardList;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class RequirementDependentReward extends AbstractReward {
 

@@ -21,7 +21,7 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class PoolEditGUI extends AbstractGui {
 

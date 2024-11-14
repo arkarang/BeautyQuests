@@ -16,7 +16,7 @@ import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.types.AbstractItemStage;
 import fr.skytasul.quests.api.utils.CountableObject;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class StageMelt extends AbstractItemStage implements Listener {
 

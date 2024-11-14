@@ -18,7 +18,7 @@ import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.PlayerPlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;

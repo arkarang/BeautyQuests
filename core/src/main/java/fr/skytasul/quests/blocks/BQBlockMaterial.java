@@ -1,10 +1,10 @@
 package fr.skytasul.quests.blocks;
 
+import com.cryptomorin.xseries.XBlock;
 import org.bukkit.block.Block;
 import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.blocks.BQBlockOptions;
-import fr.skytasul.quests.api.utils.XBlock;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class BQBlockMaterial extends BQBlock {
 

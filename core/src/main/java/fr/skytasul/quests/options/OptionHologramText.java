@@ -6,7 +6,7 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOptionString;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class OptionHologramText extends QuestOptionString {
 	

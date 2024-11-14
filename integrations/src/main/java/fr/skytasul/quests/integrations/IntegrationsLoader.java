@@ -1,5 +1,6 @@
 package fr.skytasul.quests.integrations;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -9,16 +10,9 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.IntegrationManager.BQDependency;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.integrations.fabled.FabledClassRequirement;
 import fr.skytasul.quests.integrations.fabled.FabledLevelRequirement;
 import fr.skytasul.quests.integrations.fabled.FabledXpReward;
-import fr.skytasul.quests.integrations.factions.FactionRequirement;
-import fr.skytasul.quests.integrations.jobs.JobLevelRequirement;
-import fr.skytasul.quests.integrations.maps.BQBlueMap;
-import fr.skytasul.quests.integrations.maps.BQDynmap;
-import fr.skytasul.quests.integrations.mcmmo.McCombatLevelRequirement;
-import fr.skytasul.quests.integrations.mcmmo.McMMOSkillRequirement;
 import fr.skytasul.quests.integrations.mobs.*;
 import fr.skytasul.quests.integrations.npcs.*;
 import fr.skytasul.quests.integrations.placeholders.PapiMessageProcessor;
@@ -49,15 +43,8 @@ public class IntegrationsLoader {
 
 		IntegrationManager manager = QuestsPlugin.getPlugin().getIntegrationManager();
 
-		// NPCS
-		manager.addDependency(new BQDependency("ServersNPC",
-				() -> QuestsAPI.getAPI().addNpcFactory("znpcs", new BQServerNPCs()), null, this::isZnpcsVersionValid));
 
 		manager.addDependency(new BQDependency("ZNPCsPlus", this::registerZnpcsPlus));
-
-		manager.addDependency(new BQDependency("FancyNpcs", () -> {
-			QuestsAPI.getAPI().addNpcFactory("fancynpcs", new BQFancyNPCs());
-		}));
 
 		manager.addDependency(new BQDependency("Citizens", () -> {
 			QuestsAPI.getAPI().addNpcFactory("citizens", new BQCitizens());
@@ -67,12 +54,6 @@ public class IntegrationsLoader {
 
 		// MOBS
 		manager.addDependency(new BQDependency("MythicMobs", this::registerMythicMobs));
-
-		manager.addDependency(new BQDependency("Boss", () -> QuestsAPI.getAPI().registerMobFactory(new BQBoss()), null,
-				this::isBossVersionValid));
-
-		manager.addDependency(
-				new BQDependency("AdvancedSpawners", () -> QuestsAPI.getAPI().registerMobFactory(new BQAdvancedSpawners())));
 
 		manager.addDependency(
 				new BQDependency("LevelledMobs", () -> QuestsAPI.getAPI().registerMobFactory(new BQLevelledMobs())));
@@ -86,27 +67,11 @@ public class IntegrationsLoader {
 		manager.addDependency(new BQDependency("Fabled", this::registerFabled, null, this::isFabledValid)
 				.addPluginName("ProSkillAPI").addPluginName("SkillAPI") // for warning message
 				);
-		manager.addDependency(new BQDependency("Jobs", this::registerJobs));
-		manager.addDependency(new BQDependency("Factions", this::registerFactions));
-		manager.addDependency(new BQDependency("mcMMO", this::registerMcMmo));
-		manager.addDependency(new BQDependency("McCombatLevel", this::registerMcCombatLevel));
 		manager.addDependency(new BQDependency("Vault", this::registerVault));
 
 
-		// MAPS
-		if (config.dynmapSetName() != null && !config.dynmapSetName().isEmpty()) {
-			manager.addDependency(
-					new BQDependency("dynmap", () -> QuestsAPI.getAPI().registerQuestsHandler(new BQDynmap())));
-			manager.addDependency(
-					new BQDependency("BlueMap", () -> QuestsAPI.getAPI().registerQuestsHandler(new BQBlueMap())));
-		}
-
-
 		// HOLOGRAMS
-		manager.addDependency(new BQDependency("CMI", () -> {
-			if (BQCMI.areHologramsEnabled())
-				QuestsAPI.getAPI().setHologramsManager(new BQCMI());
-		}));
+
 		manager.addDependency(new BQDependency("HolographicDisplays", this::registerHolographicDisplays));
 		manager.addDependency(
 				new BQDependency("DecentHolograms", () -> QuestsAPI.getAPI().setHologramsManager(new BQDecentHolograms())));
@@ -115,12 +80,9 @@ public class IntegrationsLoader {
 		// OTHERS
 		manager.addDependency(new BQDependency("PlaceholderAPI", this::registerPapi));
 		manager.addDependency(new BQDependency("WorldGuard", BQWorldGuard::initialize, BQWorldGuard::unload));
-		manager.addDependency(new BQDependency("Sentinel", BQSentinel::initialize));
 		manager.addDependency(new BQDependency("TokenEnchant",
 				() -> Bukkit.getPluginManager().registerEvents(new BQTokenEnchant(), QuestsPlugin.getPlugin())));
-		manager.addDependency(new BQDependency("UltimateTimber",
-				() -> Bukkit.getPluginManager().registerEvents(new BQUltimateTimber(), QuestsPlugin.getPlugin()), null,
-				this::isUltimateTimberValid));
+
 		manager.addDependency(new BQDependency("ItemsAdder", BQItemsAdder::initialize, BQItemsAdder::unload));
 		manager.addDependency(new BQDependency("MMOItems", BQMMOItems::initialize, BQMMOItems::unload));
 	}
@@ -161,26 +123,6 @@ public class IntegrationsLoader {
 		QuestsAPI.getAPI().setHologramsManager(holograms);
 	}
 
-	private void registerMcCombatLevel() {
-		QuestsAPI.getAPI().getRequirements()
-				.register(new RequirementCreator("mcmmoCombatLevelRequirement", McCombatLevelRequirement.class,
-						ItemUtils.item(XMaterial.IRON_SWORD, Lang.RCombatLvl.toString()), McCombatLevelRequirement::new));
-	}
-
-	private void registerMcMmo() {
-		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("mcmmoSklillLevelRequired", McMMOSkillRequirement.class, ItemUtils.item(XMaterial.IRON_CHESTPLATE, Lang.RSkillLvl.toString()), McMMOSkillRequirement::new));
-	}
-
-	private void registerFactions() {
-		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("factionRequired", FactionRequirement.class,
-				ItemUtils.item(XMaterial.WITHER_SKELETON_SKULL, Lang.RFaction.toString()), FactionRequirement::new));
-	}
-
-	private void registerJobs() {
-		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("jobLevelRequired", JobLevelRequirement.class,
-						ItemUtils.item(XMaterial.LEATHER_CHESTPLATE, Lang.RJobLvl.toString()),
-						JobLevelRequirement::new));
-	}
 
 	private void registerFabled() {
 		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("classRequired", FabledClassRequirement.class,

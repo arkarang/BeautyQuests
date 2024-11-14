@@ -19,7 +19,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.api.utils.MissingDependencyException;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class BQWorldGuard {
 

@@ -1,5 +1,6 @@
 package fr.skytasul.quests;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;

@@ -14,8 +14,7 @@
 	<repositories>
 		<repository>
 			<id>placeholderapi</id>
-			<url>
-				https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
 		<repository>
 			<id>dynmap</id>
@@ -113,24 +112,7 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.mcmonkey</groupId>
-			<artifactId>sentinel</artifactId>
-			<version>2.7.3-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.oliver</groupId>
-			<artifactId>FancyNpcs</artifactId>
-			<version>2.2.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.github.gonalez</groupId>
-			<artifactId>znpcs</artifactId>
-			<version>4.2</version>
-			<scope>provided</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>com.github.Pyrbu</groupId>
 			<artifactId>ZNPCsPlus</artifactId>
@@ -152,7 +134,7 @@
 		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
-			<version>2.11.3</version>
+			<version>2.11.5</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -252,72 +234,5 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Local JARs -->
-		<dependency>
-			<groupId>org.mineacademy</groupId>
-			<artifactId>boss</artifactId>
-			<version>4.2.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.craftaro</groupId>
-			<artifactId>UltimateTimber</artifactId>
-			<version>3.0.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.dynmap</groupId>
-			<artifactId>dynmap</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.massivecraft</groupId>
-			<artifactId>factions</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.massivecraft</groupId>
-			<artifactId>massivecore</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gamingmesh</groupId>
-			<artifactId>jobs</artifactId>
-			<version>5.1.0.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gmail.mrphpfan</groupId>
-			<artifactId>mccombatlevel</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gmail.nossr50</groupId>
-			<artifactId>mcmmo</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.zrips</groupId>
-			<artifactId>cmi</artifactId>
-			<version>9.0.2.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.zrips</groupId>
-			<artifactId>cmilib</artifactId>
-			<version>1.2.3.3</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>gcspawners</groupId>
-			<artifactId>gcspawners</artifactId>
-			<version>3.3.0</version>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 </project>

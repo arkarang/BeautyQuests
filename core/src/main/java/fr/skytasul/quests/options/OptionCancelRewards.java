@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOptionRewards;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.rewards.RewardList;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class OptionCancelRewards extends QuestOptionRewards {
 

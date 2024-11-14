@@ -6,7 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.blocks.BQBlockOptions;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class Post1_13 {
 

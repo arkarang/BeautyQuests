@@ -20,7 +20,7 @@ import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.types.AbstractEntityStage;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class StageBreed extends AbstractEntityStage implements Listener {
 

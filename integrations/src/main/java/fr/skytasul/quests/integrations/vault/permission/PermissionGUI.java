@@ -17,7 +17,7 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class PermissionGUI extends AbstractGui {
 

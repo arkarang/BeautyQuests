@@ -7,7 +7,7 @@ import fr.skytasul.quests.api.editors.Editor;
 import fr.skytasul.quests.api.editors.EditorFactory;
 import fr.skytasul.quests.api.editors.parsers.AbstractParser;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.editor.parsers.MaterialParser;
 
 public class DefaultEditorFactory implements EditorFactory {

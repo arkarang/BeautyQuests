@@ -3,6 +3,8 @@ package fr.skytasul.quests.stages;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -26,7 +28,6 @@ import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.gui.mobs.MobsListGUI;

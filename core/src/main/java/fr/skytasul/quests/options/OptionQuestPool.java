@@ -18,7 +18,7 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 
 public class OptionQuestPool extends QuestOption<QuestPool> {
 	

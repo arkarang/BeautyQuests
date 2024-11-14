@@ -5,6 +5,8 @@ import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.cryptomorin.xseries.XMaterial;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +15,6 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
 
 public class Mob<D> implements Cloneable {
 

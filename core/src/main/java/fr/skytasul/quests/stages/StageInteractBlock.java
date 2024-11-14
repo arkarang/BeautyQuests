@@ -25,7 +25,7 @@ import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.blocks.SelectBlockGUI;
 

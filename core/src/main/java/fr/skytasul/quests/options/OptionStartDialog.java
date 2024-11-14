@@ -13,7 +13,7 @@ import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.stages.types.Dialogable;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
 
 public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable {

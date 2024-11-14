@@ -8,7 +8,7 @@ import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

@@ -21,7 +21,7 @@ import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.XMaterial;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.compatibility.Post1_13;

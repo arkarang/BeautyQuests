@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/api/beautyquests-api.iml" filepath="$PROJECT_DIR$/api/beautyquests-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/beautyquests-core.iml" filepath="$PROJECT_DIR$/core/beautyquests-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/integrations/beautyquests-integrations.iml" filepath="$PROJECT_DIR$/integrations/beautyquests-integrations.iml" />
+      <module fileurl="file://$PROJECT_DIR$/v1_20_R1/beautyquests-v1_20_R1.iml" filepath="$PROJECT_DIR$/v1_20_R1/beautyquests-v1_20_R1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/v1_20_R2/beautyquests-v1_20_R2.iml" filepath="$PROJECT_DIR$/v1_20_R2/beautyquests-v1_20_R2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/v1_20_R3/beautyquests-v1_20_R3.iml" filepath="$PROJECT_DIR$/v1_20_R3/beautyquests-v1_20_R3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/v1_20_R4/beautyquests-v1_20_R4.iml" filepath="$PROJECT_DIR$/v1_20_R4/beautyquests-v1_20_R4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/v1_21_R1/beautyquests-v1_21_R1.iml" filepath="$PROJECT_DIR$/v1_21_R1/beautyquests-v1_21_R1.iml" />
+    </modules>
+  </component>
+</project>

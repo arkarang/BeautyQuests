@@ -9,7 +9,6 @@ import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.api.utils.*;
-import fr.skytasul.quests.players.BqAccountsHook;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
@@ -105,10 +104,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
 		hookAcounts = config.getBoolean("accountsHook");
-		if (hookAcounts) {
-			Bukkit.getPluginManager().registerEvents(new BqAccountsHook(), BeautyQuests.getInstance());
-			QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing player datas for quests !");
-		}
+
 		usePlayerBlockTracker = config.getBoolean("usePlayerBlockTracker");
 
 		if (MinecraftVersion.MAJOR >= 9) {

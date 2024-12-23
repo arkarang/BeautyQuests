@@ -32,17 +32,17 @@ public interface PlayerAccount extends HasPlaceholders {
 	 */
 	public @Nullable Player getPlayer();
 
-	public boolean hasQuestDatas(@NotNull Quest quest);
+	public boolean hasQuestEntry(@NotNull Quest quest);
 
-	public @Nullable PlayerQuestDatas getQuestDatasIfPresent(@NotNull Quest quest);
+	public @Nullable PlayerQuestEntryData getQuestEntryIfPresent(@NotNull Quest quest);
 
-	public @NotNull PlayerQuestDatas getQuestDatas(@NotNull Quest quest);
+	public @NotNull PlayerQuestEntryData getQuestEntry(@NotNull Quest quest);
 
-	public @NotNull CompletableFuture<PlayerQuestDatas> removeQuestDatas(@NotNull Quest quest);
+	public @NotNull CompletableFuture<PlayerQuestEntryData> removeQuestEntry(@NotNull Quest quest);
 
-	public @NotNull CompletableFuture<PlayerQuestDatas> removeQuestDatas(int id);
+	public @NotNull CompletableFuture<PlayerQuestEntryData> removeQuestEntry(int id);
 
-	public @UnmodifiableView @NotNull Collection<@NotNull PlayerQuestDatas> getQuestsDatas();
+	public @UnmodifiableView @NotNull Collection<@NotNull PlayerQuestEntryData> getQuestEntries();
 
 	public boolean hasPoolDatas(@NotNull QuestPool pool);
 
@@ -58,7 +58,7 @@ public interface PlayerAccount extends HasPlaceholders {
 
 	public <T> void setData(@NotNull SavableData<T> data, @Nullable T value);
 
-	public void resetDatas();
+	public void resetEntries();
 
 	public @NotNull String getName();
 

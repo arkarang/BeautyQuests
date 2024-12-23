@@ -8,7 +8,7 @@ import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.players.PlayerQuestEntryData;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.stages.*;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
@@ -83,7 +83,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	@Override
 	public void updateObjective(@NotNull Player player, @NotNull String dataKey, @Nullable Object dataValue) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		Map<String, Object> datas = acc.getQuestDatas(branch.getQuest()).getStageDatas(getStorageId());
+		Map<String, Object> datas = acc.getQuestEntry(branch.getQuest()).getStageDatas(getStorageId());
 		if (datas == null) {
 			QuestsPlugin.getPlugin().getLogger()
 					.severe("Account " + acc.getNameAndID() + " did not have data for " + toString() + ". Creating some.");
@@ -92,7 +92,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		}
 
 		datas.put(dataKey, dataValue);
-		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
+		acc.getQuestEntry(branch.getQuest()).setStageDatas(getStorageId(), datas);
 
 		propagateStageHandlers(handler -> handler.stageUpdated(player, this));
 		branch.getManager().questUpdated(player);
@@ -100,7 +100,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	@Override
 	public <D> @Nullable D getData(@NotNull PlayerAccount acc, @NotNull String dataKey, @Nullable Class<D> dataType) {
-		PlayerQuestDatas playerDatas = acc.getQuestDatas(branch.getQuest());
+		PlayerQuestEntryData playerDatas = acc.getQuestEntry(branch.getQuest());
 		Map<String, Object> datas = playerDatas.getStageDatas(getStorageId());
 
 		if (datas == null) {
@@ -111,7 +111,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 					.severe("Account " + acc.getNameAndID() + " did not have data for " + toString() + ". Creating some.");
 			datas = new HashMap<>();
 			stage.initPlayerDatas(acc, datas);
-			acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
+			acc.getQuestEntry(branch.getQuest()).setStageDatas(getStorageId(), datas);
 		}
 
 		Object data = datas.get(dataKey);
@@ -174,13 +174,13 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 			MessageUtils.sendMessage(acc.getPlayer(), stage.getStartMessage(), MessageType.DefaultMessageType.OFF);
 		Map<String, Object> datas = new HashMap<>();
 		stage.initPlayerDatas(acc, datas);
-		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), datas);
+		acc.getQuestEntry(branch.getQuest()).setStageDatas(getStorageId(), datas);
 		propagateStageHandlers(handler -> handler.stageStart(acc, this));
 		stage.started(acc);
 	}
 
 	public void end(@NotNull PlayerAccount acc) {
-		acc.getQuestDatas(branch.getQuest()).setStageDatas(getStorageId(), null);
+		acc.getQuestEntry(branch.getQuest()).setStageDatas(getStorageId(), null);
 		propagateStageHandlers(handler -> handler.stageEnd(acc, this));
 		stage.ended(acc);
 	}

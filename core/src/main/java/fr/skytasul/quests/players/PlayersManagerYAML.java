@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SavableData;
+import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.Utils;
@@ -42,7 +43,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 	}
 
 	@Override
-	public void load(AccountFetchRequest request) {
+	public CompletableFuture<PlayerAccount> load(AccountFetchRequest request) {
 		String identifier = super.getIdentifier(request.getOfflinePlayer());
 		if (identifiersIndex.containsValue(identifier)) {
 			int id = Utils.getKeyByValue(identifiersIndex, identifier);
@@ -84,7 +85,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 				}
 			}
 		} else if (request.mustCreateMissing()) {
-			AbstractAccount absacc = super.createAbstractAccount(request.getOnlinePlayer());
+			AbstractAccount absacc = super.createAbstractAccount(request.getUniqueId());
 			PlayerAccountImplementation acc = new PlayerAccountImplementation(absacc, lastAccountID + 1);
 			if (request.shouldCache())
 				addAccount(acc);
@@ -93,6 +94,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 		} else {
 			request.notLoaded();
 		}
+		return CompletableFuture.completedFuture(request.getAccount());
 	}
 
 	@Override
@@ -103,8 +105,8 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 	}
 
 	@Override
-	public PlayerQuestDatasImplementation createPlayerQuestDatas(PlayerAccountImplementation acc, Quest quest) {
-		return new PlayerQuestDatasImplementation(acc, quest.getId());
+	public PlayerQuestEntryDataImplementation createPlayerQuestDatas(PlayerAccountImplementation acc, Quest quest) {
+		return new PlayerQuestEntryDataImplementation(acc, quest.getId());
 	}
 
 	@Override
@@ -120,7 +122,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 
 			for (PlayerAccountImplementation account : loadedAccounts.values()) {
 				try {
-					if (account.removeQuestDatas(quest).get() != null) {
+					if (account.removeQuestEntry(quest).get() != null) {
 						// we can use the .get() method as the CompletableFuture created by the YAML players manager is
 						// already completed
 						amount++;
@@ -215,8 +217,8 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 		}
 		PlayerAccountImplementation acc = createPlayerAccount(identifier, index);
 		for (Map<?, ?> questConfig : datas.getMapList("quests")) {
-			PlayerQuestDatasImplementation questDatas = PlayerQuestDatasImplementation.deserialize(acc, (Map<String, Object>) questConfig);
-			acc.questDatas.put(questDatas.questID, questDatas);
+			PlayerQuestEntryDataImplementation questDatas = PlayerQuestEntryDataImplementation.deserialize(acc, (Map<String, Object>) questConfig);
+			acc.currentQuests.put(questDatas.questID, questDatas);
 		}
 		for (Map<?, ?> poolConfig : datas.getMapList("pools")) {
 			PlayerPoolDatasImplementation questDatas = PlayerPoolDatasImplementation.deserialize(acc, (Map<String, Object>) poolConfig);
@@ -300,7 +302,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 	}
 
 	@Override
-	public void unloadAccount(PlayerAccountImplementation acc) {
+	public CompletableFuture<Void> unloadAccount(PlayerAccountImplementation acc) {
 		loadedAccounts.remove(acc.index);
 		unloadedAccounts.put(acc.index, acc);
 		pendingSaveAccounts.put(acc.index, acc);
@@ -312,6 +314,7 @@ public class PlayersManagerYAML extends AbstractPlayersManager {
 				QuestsPlugin.getPlugin().getLoggerExpanded().warning("An error ocurred while saving player file " + acc.debugName(), e);
 			}
 		});
+		return CompletableFuture.completedFuture(null);
 	}
 
 }

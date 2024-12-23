@@ -28,7 +28,7 @@ import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.players.PlayerQuestEntryData;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.Actionnable;
@@ -213,13 +213,13 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	}
 
 	public @NotNull String getTimeLeft(@NotNull PlayerAccount acc) {
-		return Utils.millisToHumanString(acc.getQuestDatas(this).getTimer() - System.currentTimeMillis());
+		return Utils.millisToHumanString(acc.getQuestEntry(this).getTimer() - System.currentTimeMillis());
 	}
 
 	@Override
 	public boolean hasStarted(@NotNull PlayerAccount acc) {
-		if (!acc.hasQuestDatas(this)) return false;
-		if (acc.getQuestDatas(this).hasStarted()) return true;
+		if (!acc.hasQuestEntry(this)) return false;
+		if (acc.getQuestEntry(this).hasStarted()) return true;
 		if (acc.isCurrent() && hasAsyncStart() && inAsyncStart.contains(acc.getPlayer()))
 			return true;
 		return false;
@@ -227,12 +227,12 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public boolean hasFinished(@NotNull PlayerAccount acc) {
-		return acc.hasQuestDatas(this) && acc.getQuestDatas(this).isFinished();
+		return acc.hasQuestEntry(this) && acc.getQuestEntry(this).isFinished();
 	}
 
 	@Override
 	public boolean cancelPlayer(@NotNull PlayerAccount acc) {
-		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(this);
+		PlayerQuestEntryData datas = acc.getQuestEntryIfPresent(this);
 		if (datas == null || !datas.hasStarted())
 			return false;
 
@@ -260,12 +260,12 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		boolean hadDatas = false;
 		CompletableFuture<?> future = null;
 
-		if (acc.hasQuestDatas(this)) {
+		if (acc.hasQuestEntry(this)) {
 			hadDatas = true;
 
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Resetting quest " + id + " for player " + acc.getNameAndID());
 			cancelInternal(acc);
-			future = acc.removeQuestDatas(this);
+			future = acc.removeQuestEntry(this);
 		}
 
 		if (acc.isCurrent() && hasOption(OptionStartDialog.class)
@@ -323,13 +323,13 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	}
 
 	public boolean testTimer(@NotNull PlayerAccount acc, boolean sendMessage) {
-		if (isRepeatable() && acc.hasQuestDatas(this)) {
-			long time = acc.getQuestDatas(this).getTimer();
+		if (isRepeatable() && acc.hasQuestEntry(this)) {
+			long time = acc.getQuestEntry(this).getTimer();
 			if (time > System.currentTimeMillis()) {
 				if (sendMessage && acc.isCurrent())
 					Lang.QUEST_WAIT.quickSend(acc.getPlayer(), "time_left", getTimeLeft(acc));
 				return false;
-			}else if (time != 0) acc.getQuestDatas(this).setTimer(0);
+			}else if (time != 0) acc.getQuestEntry(this).setTimer(0);
 		}
 		return true;
 	}
@@ -354,10 +354,10 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
-		if (!acc.hasQuestDatas(this)) throw new IllegalArgumentException("Account does not have quest datas for quest " + id);
+		if (!acc.hasQuestEntry(this)) throw new IllegalArgumentException("Account does not have quest datas for quest " + id);
 		if (acc.isCurrent() && hasAsyncStart() && inAsyncStart.contains(acc.getPlayer()))
 			return "§7x";
-		PlayerQuestDatas datas = acc.getQuestDatas(this);
+		PlayerQuestEntryData datas = acc.getQuestEntry(this);
 		if (datas.isInQuestEnd()) return Lang.SCOREBOARD_ASYNC_END.toString();
 		QuestBranchImplementation branch = manager.getBranch(datas.getBranch());
 		if (branch == null) throw new IllegalStateException("Account is in branch " + datas.getBranch() + " in quest " + id + ", which does not actually exist");
@@ -434,7 +434,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()) return;
 		AdminMode.broadcast(p.getName() + " started the quest " + id);
-		acc.getQuestDatas(this).setTimer(0);
+		acc.getQuestEntry(this).setTimer(0);
 		if (!silently) {
 			String startMsg = getOptionValueOrDef(OptionStartMessage.class);
 			if (!"none".equals(startMsg))
@@ -470,7 +470,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	public void finish(@NotNull Player p) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		AdminMode.broadcast(p.getName() + " is completing the quest " + id);
-		PlayerQuestDatas questDatas = acc.getQuestDatas(this);
+		PlayerQuestEntryData questDatas = acc.getQuestEntry(this);
 
 		Runnable run = () -> {
 			try {
@@ -516,7 +516,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Using " + Thread.currentThread().getName() + " as the thread for async rewards.");
 				run.run();
 			}, "BQ async end " + p.getName()).start();
-		}else run.run();
+		} else
+			run.run();
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.players.PlayerQuestEntryData;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
@@ -111,20 +111,20 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		if (acc == null) return "§cdatas not loaded";
 		if (identifier.equals("player_inprogress_amount"))
-			return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted).count();
+			return "" + acc.getQuestEntries().stream().filter(PlayerQuestEntryData::hasStarted).count();
 		if (identifier.equals("player_finished_amount"))
-			return "" + acc.getQuestsDatas().stream().filter(PlayerQuestDatas::isFinished).count();
+			return "" + acc.getQuestEntries().stream().filter(PlayerQuestEntryData::isFinished).count();
 		if (identifier.equals("player_finished_total_amount"))
-			return "" + acc.getQuestsDatas().stream().mapToInt(PlayerQuestDatas::getTimesFinished).sum();
+			return "" + acc.getQuestEntries().stream().mapToInt(PlayerQuestEntryData::getTimesFinished).sum();
 		if (identifier.equals("started_id_list"))
-			return acc.getQuestsDatas().stream().filter(PlayerQuestDatas::hasStarted)
+			return acc.getQuestEntries().stream().filter(PlayerQuestEntryData::hasStarted)
 					.map(x -> Integer.toString(x.getQuestID())).collect(Collectors.joining(";"));
 
 		if (identifier.equals("started")) {
-			return acc.getQuestsDatas()
+			return acc.getQuestEntries()
 					.stream()
-					.filter(PlayerQuestDatas::hasStarted)
-					.map(PlayerQuestDatas::getQuest)
+					.filter(PlayerQuestEntryData::hasStarted)
+					.map(PlayerQuestEntryData::getQuest)
 					.filter(Objects::nonNull)
 					.filter(Quest::isScoreboardEnabled)
 					.map(quest -> {
@@ -203,11 +203,11 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 						return qu.getDescriptionLine(acc, DescriptionSource.PLACEHOLDER);
 					}
 					if (qu.hasFinished(acc))
-						return Lang.Finished.quickFormat("times_finished", acc.getQuestDatas(qu).getTimesFinished());
+						return Lang.Finished.quickFormat("times_finished", acc.getQuestEntry(qu).getTimesFinished());
 					return Lang.Not_Started.toString();
 				}else {
-					if (!acc.hasQuestDatas(qu)) return "-1";
-					PlayerQuestDatas datas = acc.getQuestDatas(qu);
+					if (!acc.hasQuestEntry(qu)) return "-1";
+					PlayerQuestEntryData datas = acc.getQuestEntry(qu);
 					if (datas.hasStarted()) return Integer.toString(datas.getStage());
 					return "-1";
 				}
@@ -220,8 +220,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 			try {
 				Quest qu = QuestsAPI.getAPI().getQuestsManager().getQuest(Integer.parseInt(sid));
 				if (qu == null) return "§c§lError: unknown quest §o" + sid;
-				if (!acc.hasQuestDatas(qu)) return "0";
-				return Integer.toString(acc.getQuestDatas(qu).getTimesFinished());
+				if (!acc.hasQuestEntry(qu)) return "0";
+				return Integer.toString(acc.getQuestEntry(qu).getTimesFinished());
 			}catch (NumberFormatException ex) {
 				return "§c§lError: §o" + sid;
 			}

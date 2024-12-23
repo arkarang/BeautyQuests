@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.players.PlayerQuestEntryData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.QuestsManager;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
@@ -146,10 +146,10 @@ public class QuestsManagerImplementation implements QuestsManager {
 	@Override
 	public @NotNull @Unmodifiable List<Quest> getQuestsStarted(@NotNull PlayerAccount acc, boolean hide,
 			boolean withoutScoreboard) {
-		return acc.getQuestsDatas()
+		return acc.getQuestEntries()
 				.stream()
-				.filter(PlayerQuestDatas::hasStarted)
-				.map(PlayerQuestDatas::getQuest)
+				.filter(PlayerQuestEntryData::hasStarted)
+				.map(PlayerQuestEntryData::getQuest)
 				.filter(Objects::nonNull)
 				.filter(Quest::isValid)
 				.filter(quest -> !hide || !quest.isHidden(QuestVisibilityLocation.TAB_IN_PROGRESS))

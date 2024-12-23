@@ -21,7 +21,7 @@ import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner.DialogNextReason;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.players.PlayerQuestEntryData;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
@@ -103,13 +103,13 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 		BranchesManagerImplementation manager = (BranchesManagerImplementation) quest.getBranchesManager();
 
-		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(quest);
+		PlayerQuestEntryData datas = acc.getQuestEntryIfPresent(quest);
 		if (branchID == null && (datas == null || !datas.hasStarted())) { // start quest
 			quest.start(player);
 			Lang.START_QUEST.send(actor.getSender(), quest, acc);
 			return;
 		}
-		if (datas == null) datas = acc.getQuestDatas(quest); // creates quest datas
+		if (datas == null) datas = acc.getQuestEntry(quest); // creates quest datas
 
 		QuestBranchImplementation currentBranch = manager.getBranch(datas.getBranch());
 
@@ -154,7 +154,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@CommandPermission ("beautyquests.command.setStage")
 	public void startDialog(BukkitCommandActor actor, Player player, Quest quest) {
 		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		PlayerQuestDatas datas = acc.getQuestDatasIfPresent(quest);
+		PlayerQuestEntryData datas = acc.getQuestEntryIfPresent(quest);
 
 		DialogRunner runner = null;
 		if (datas == null || !quest.hasStarted(acc)) {
@@ -192,14 +192,14 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		for (Player player : players) {
 			PlayerAccount acc = PlayersManager.getPlayerAccount(player);
 
-			List<CompletableFuture<?>> futures = new ArrayList<>(acc.getQuestsDatas().size() + acc.getPoolDatas().size());
+			List<CompletableFuture<?>> futures = new ArrayList<>(acc.getQuestEntries().size() + acc.getPoolDatas().size());
 
 			int quests = 0, pools = 0;
 			for (@NotNull
-			PlayerQuestDatas questDatas : new ArrayList<>(acc.getQuestsDatas())) {
+            PlayerQuestEntryData questDatas : new ArrayList<>(acc.getQuestEntries())) {
 				Quest quest = questDatas.getQuest();
 				CompletableFuture<?> future =
-						quest == null ? acc.removeQuestDatas(questDatas.getQuestID()) : quest.resetPlayer(acc);
+						quest == null ? acc.removeQuestEntry(questDatas.getQuestID()) : quest.resetPlayer(acc);
 				future = future.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError("An error occurred while resetting quest "
 						+ questDatas.getQuestID() + " to player " + player.getName(), actor.getSender()));
 				futures.add(future);
@@ -217,7 +217,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 				futures.add(future);
 				pools++;
 			}
-			acc.resetDatas();
+			acc.resetEntries();
 
 			final int questsFinal = quests;
 			final int poolsFinal = pools;

@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.players.PlayerQuestEntryData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 
@@ -18,7 +18,7 @@ public class QuestDescriptionContext {
 	private final PlayerListCategory category;
 	private final DescriptionSource source;
 	
-	private PlayerQuestDatas cachedDatas;
+	private PlayerQuestEntryData cachedDatas;
 	
 	public QuestDescriptionContext(@NotNull QuestDescription descriptionOptions, @NotNull Quest quest,
 			@NotNull PlayerAccount acc, @NotNull PlayerListCategory category, @NotNull DescriptionSource source) {
@@ -49,8 +49,8 @@ public class QuestDescriptionContext {
 		return source;
 	}
 
-	public @Nullable PlayerQuestDatas getQuestDatas() {
-		if (cachedDatas == null) cachedDatas = acc.getQuestDatasIfPresent(quest);
+	public @Nullable PlayerQuestEntryData getQuestDatas() {
+		if (cachedDatas == null) cachedDatas = acc.getQuestEntryIfPresent(quest);
 		return cachedDatas;
 	}
 	

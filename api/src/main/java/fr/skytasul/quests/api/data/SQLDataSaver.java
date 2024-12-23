@@ -16,12 +16,14 @@ public class SQLDataSaver<T> {
 			return new Timestamp(obj.getTime());
 		}
 	};
+
 	private static final SQLType<Character> TYPE_CHAR = new SQLType<Character>(Types.CHAR, "CHAR(1)", (resultSet, column) -> resultSet.getString(column).charAt(0)) {
 		@Override
 		public Object convert(Character obj) {
 			return obj.toString();
 		}
 	}.omitLength();
+
 	private static final SQLType<String> TYPE_STRING = new SQLType<String>(Types.VARCHAR, "VARCHAR", ResultSet::getString).requiresLength();
 	private static final SQLType<Boolean> TYPE_BOOLEAN = new SQLType<>(Types.BOOLEAN, "BOOLEAN", ResultSet::getBoolean);
 	private static final SQLType<Float> TYPE_FLOAT = new SQLType<>(Types.FLOAT, "FLOAT", ResultSet::getFloat);

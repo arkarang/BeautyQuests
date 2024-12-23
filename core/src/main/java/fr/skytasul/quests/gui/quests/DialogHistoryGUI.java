@@ -8,7 +8,7 @@ import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.Message;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.players.PlayerQuestEntryData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.types.Dialogable;
@@ -34,7 +34,7 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		super(quest.getName(), DyeColor.LIGHT_BLUE, Collections.emptyList(), x -> end.run(), null);
 		this.end = end;
 
-		Validate.isTrue(acc.hasQuestDatas(quest), "Player must have started the quest");
+		Validate.isTrue(acc.hasQuestEntry(quest), "Player must have started the quest");
 		Validate.isTrue(acc.isCurrent(), "Player must be online");
 
 		player = acc.getPlayer();
@@ -42,7 +42,7 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		if (quest.hasOption(OptionStartDialog.class))
 			objects.add(new WrappedDialogable(quest.getOption(OptionStartDialog.class)));
 
-		getDialogableStream(acc.getQuestDatas(quest), quest)
+		getDialogableStream(acc.getQuestEntry(quest), quest)
 			.map(WrappedDialogable::new)
 			.forEach(objects::add);
 	}
@@ -78,7 +78,7 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		return StandardCloseBehavior.NOTHING;
 	}
 
-	public static Stream<Dialogable> getDialogableStream(PlayerQuestDatas datas, Quest quest) {
+	public static Stream<Dialogable> getDialogableStream(PlayerQuestEntryData datas, Quest quest) {
 		return datas.getQuestFlowStages()
 				.map(StageController::getStage)
 				.filter(Dialogable.class::isInstance)

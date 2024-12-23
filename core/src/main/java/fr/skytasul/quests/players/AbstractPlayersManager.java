@@ -4,18 +4,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfigurationImplementation;
+import fr.skytasul.quests.QuestsListener;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SavableData;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
+import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.utils.MissingDependencyException;
 import fr.skytasul.quests.players.accounts.AbstractAccount;
 import fr.skytasul.quests.players.accounts.UUIDAccount;
 import fr.skytasul.quests.utils.DebugUtils;
+import kr.reo.quest.ReoQuestModule;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -31,13 +31,13 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractPlayersManager implements PlayersManager {
 
-	protected final @NotNull Map<Player, PlayerAccountImplementation> cachedAccounts = new HashMap<>();
+	protected final @NotNull Map<UUID, PlayerAccountImplementation> cachedAccounts = new HashMap<>();
 	protected final @NotNull Set<@NotNull SavableData<?>> accountDatas = new HashSet<>();
 	private boolean loaded = false;
 
-	public abstract void load(@NotNull AccountFetchRequest request);
+	public abstract CompletableFuture<PlayerAccount> load(@NotNull AccountFetchRequest request);
 
-	public abstract void unloadAccount(@NotNull PlayerAccountImplementation acc);
+	public abstract CompletableFuture<Void> unloadAccount(@NotNull PlayerAccountImplementation acc);
 
 	protected abstract @NotNull CompletableFuture<Void> removeAccount(@NotNull PlayerAccountImplementation acc);
 
@@ -45,13 +45,13 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 
 	public abstract @NotNull CompletableFuture<Integer> removePoolDatas(@NotNull QuestPool pool);
 
-	public abstract @NotNull PlayerQuestDatasImplementation createPlayerQuestDatas(@NotNull PlayerAccountImplementation acc,
-			@NotNull Quest quest);
+	public abstract @NotNull PlayerQuestEntryDataImplementation createPlayerQuestDatas(@NotNull PlayerAccountImplementation acc,
+																					   @NotNull Quest quest);
 
 	public abstract @NotNull PlayerPoolDatasImplementation createPlayerPoolDatas(@NotNull PlayerAccountImplementation acc,
 			@NotNull QuestPool pool);
 
-	public @NotNull CompletableFuture<Void> playerQuestDataRemoved(@NotNull PlayerQuestDatasImplementation datas) {
+	public @NotNull CompletableFuture<Void> playerQuestDataRemoved(@NotNull PlayerQuestEntryDataImplementation datas) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -91,76 +91,90 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 	}
 
 	protected @NotNull AbstractAccount createAbstractAccount(@NotNull Player p) {
-		return QuestsConfigurationImplementation.getConfiguration().hookAccounts() ? BqAccountsHook.getPlayerAccount(p)
-				: new UUIDAccount(p.getUniqueId());
+		return new UUIDAccount(p.getUniqueId());
+	}
+
+	protected @NotNull AbstractAccount createAbstractAccount(@NotNull UUID uuid) {
+		return new UUIDAccount(uuid);
 	}
 
 	protected @NotNull String getIdentifier(@NotNull OfflinePlayer p) {
-		if (QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
-			if (!p.isOnline())
-				throw new IllegalArgumentException("Cannot fetch player identifier of an offline player with AccountsHook");
-			return "Hooked|" + BqAccountsHook.getPlayerCurrentIdentifier(p.getPlayer());
-		}
 		return p.getUniqueId().toString();
 	}
 
 	protected @Nullable AbstractAccount createAccountFromIdentifier(@NotNull String identifier) {
-		if (identifier.startsWith("Hooked|")){
-			if (!QuestsConfigurationImplementation.getConfiguration().hookAccounts())
-				throw new MissingDependencyException(
-						"AccountsHook is not enabled or config parameter is disabled, but saved datas need it.");
-			String nidentifier = identifier.substring(7);
-			try{
-				return BqAccountsHook.getAccountFromIdentifier(nidentifier);
-			}catch (Exception ex){
-				ex.printStackTrace();
-			}
-		}else {
-			try{
-				UUID uuid = UUID.fromString(identifier);
-				if (QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
-					try{
-						return BqAccountsHook.createAccountFromUUID(uuid);
-					}catch (UnsupportedOperationException ex){
-						QuestsPlugin.getPlugin().getLoggerExpanded().warning("Can't migrate an UUID account to a hooked one.");
-					}
-				}else return new UUIDAccount(uuid);
-			}catch (IllegalArgumentException ex){
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Account identifier " + identifier + " is not valid.");
-			}
+		try {
+			UUID uuid = UUID.fromString(identifier);
+			return new UUIDAccount(uuid);
+		} catch (IllegalArgumentException ex) {
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Account identifier " + identifier + " is not valid.");
 		}
+
 		return null;
 	}
 
-	public synchronized void loadPlayer(@NotNull Player p) {
+	public void reorpgLoad(UUID uuid) {
+		long time = System.currentTimeMillis();
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loading player " + uuid.toString() + "...");
+		cachedAccounts.remove(uuid);
+		tryLoad(uuid, time);
+	}
+
+	public void loadPlayer(@NotNull Player p) {
 		cachedPlayerNames.put(p.getUniqueId(), p.getName());
 
 		long time = System.currentTimeMillis();
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loading player " + p.getName() + "...");
-		cachedAccounts.remove(p);
-		Bukkit.getScheduler().runTaskAsynchronously(BeautyQuests.getInstance(), () -> {
-			for (int i = 1; i >= 0; i--) {
-				try {
-					if (!tryLoad(p, time))
-						return;
-				} catch (Exception ex) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error ocurred while trying to load datas of " + p.getName() + ".", ex);
-				}
-				if (i > 0)
-					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Doing " + i + " more attempt.");
+		cachedAccounts.remove(p.getUniqueId());
+		for (int i = 1; i >= 0; i--) {
+			try {
+				if (!tryLoad(p, time))
+					return;
+			} catch (Exception ex) {
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error ocurred while trying to load datas of " + p.getName() + ".", ex);
 			}
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Datas of " + p.getName() + " have failed to load. This may cause MANY issues.");
-		});
+			if (i > 0)
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Doing " + i + " more attempt.");
+		}
+		QuestsPlugin.getPlugin().getLoggerExpanded().severe("Datas of " + p.getName() + " have failed to load. This may cause MANY issues.");
+
+	}
+
+	private void tryLoad(@NotNull UUID uuid, long time) {
+
+		AccountFetchRequest request = new AccountFetchRequest(uuid, time, true, true);
+		try {
+			PlayerAccount account = load(request).get(5000L, java.util.concurrent.TimeUnit.MILLISECONDS);
+			ReoQuestModule.inst().logJoin(uuid, account);
+		} catch (Exception e) {
+			e.printStackTrace();
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while loading datas of " + uuid + ".", e);
+			return;
+		}
+
+		if (request.isAccountCreated())
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug(
+					"New account registered for " + uuid + " (" + request.getAccount().abstractAcc.getIdentifier()
+							+ "), index " + request.getAccount().index + " via " + DebugUtils.stackTraces(2, 4));
+
+		cachedAccounts.put(uuid, request.getAccount());
+		QuestsListener.addAccountRequest(request);
+
+		String loadMessage =
+				"Completed load of " + uuid + " (" + request.getAccount().debugName() + ") datas within "
+						+ (System.currentTimeMillis() - time) + " ms (" + request.getAccount().getQuestEntries().size()
+						+ " quests, " + request.getAccount().getPoolDatas().size() + " pools)";
+
+		if (request.getLoadedFrom() != null)
+			loadMessage += " | Loaded from " + request.getLoadedFrom();
+
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug(loadMessage);
+
 	}
 
 	private boolean tryLoad(@NotNull Player p, long time) {
-		if (!p.isOnline()) {
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.warning("Player " + p.getName() + " has quit the server while loading its datas. This may be a bug.");
-			return false;
-		}
 
-		AccountFetchRequest request = new AccountFetchRequest(p, time, true, true);
+		AccountFetchRequest request = new AccountFetchRequest(p.getUniqueId(), time, true, true);
 		load(request);
 
 		if (!request.isFinished() || request.getAccount() == null) {
@@ -190,11 +204,12 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 			return false;
 		}
 
-		cachedAccounts.put(p, request.getAccount());
+		cachedAccounts.put(p.getUniqueId(), request.getAccount());
+		QuestsListener.addAccountRequest(request);
 
 		String loadMessage =
 				"Completed load of " + p.getName() + " (" + request.getAccount().debugName() + ") datas within "
-						+ (System.currentTimeMillis() - time) + " ms (" + request.getAccount().getQuestsDatas().size()
+						+ (System.currentTimeMillis() - time) + " ms (" + request.getAccount().getQuestEntries().size()
 						+ " quests, " + request.getAccount().getPoolDatas().size() + " pools)";
 
 		if (request.getLoadedFrom() != null)
@@ -202,6 +217,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug(loadMessage);
 
+		/*
 		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
 
 			if (p.isOnline()) {
@@ -216,16 +232,34 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 							QuestsPlugin.getPlugin().getLoggerExpanded().logError("An error occurred while removing newly created account"));
 			}
 		});
+		 */
 		return false;
 	}
 
 	public synchronized void unloadPlayer(@NotNull Player p) {
-		PlayerAccountImplementation acc = cachedAccounts.get(p);
+		PlayerAccountImplementation acc = cachedAccounts.get(p.getUniqueId());
 		if (acc == null) return;
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Unloading player " + p.getName() + "... (" + acc.getQuestsDatas().size() + " quests, " + acc.getPoolDatas().size() + " pools)");
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Unloading player " + p.getName() + "... (" + acc.getQuestEntries().size() + " quests, " + acc.getPoolDatas().size() + " pools)");
 		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(acc));
 		unloadAccount(acc);
-		cachedAccounts.remove(p);
+		cachedAccounts.remove(p.getUniqueId());
+	}
+
+
+	public synchronized void reorpgUnload(@NotNull UUID uuid) {
+		PlayerAccountImplementation acc = cachedAccounts.get(uuid);
+		if (acc == null) return;
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Unloading player " + uuid + "... (" + acc.getQuestEntries().size() + " quests, " + acc.getPoolDatas().size() + " pools)");
+		Bukkit.getScheduler().runTask(BeautyQuests.getInstance(), () -> {
+			Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(acc));
+		});
+		try {
+			unloadAccount(acc).get(5000L, java.util.concurrent.TimeUnit.MILLISECONDS);
+			ReoQuestModule.inst().logQuit(uuid, acc);
+		} catch (Exception e) {
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("[레오퀘스트] An error occurred while unloading datas of " + uuid + ".", e);
+		}
+		cachedAccounts.remove(uuid);
 	}
 
 	@Override
@@ -237,8 +271,13 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("(via " + DebugUtils.stackTraces(2, 5) + ")");
 		}
 
-		return cachedAccounts.get(p);
+		return cachedAccounts.get(p.getUniqueId());
 	}
+
+	public @UnknownNullability PlayerAccountImplementation getAccount(@NotNull UUID uuid) {
+		return cachedAccounts.get(uuid);
+	}
+
 
 	private static Map<UUID, String> cachedPlayerNames = new HashMap<>();
 	private static Gson gson = new Gson();
@@ -283,7 +322,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 	}
 
 	public static class AccountFetchRequest {
-		private final OfflinePlayer player;
+		private final UUID uuid;
 		private final long joinTimestamp;
 		private final boolean allowCreation;
 		private final boolean shouldCache;
@@ -293,24 +332,26 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		private PlayerAccountImplementation account;
 		private String loadedFrom;
 
-		public AccountFetchRequest(OfflinePlayer player, long joinTimestamp, boolean allowCreation, boolean shouldCache) {
-			this.player = player;
+		public AccountFetchRequest(UUID uuid, long joinTimestamp, boolean allowCreation, boolean shouldCache) {
+			this.uuid = uuid;
 			this.joinTimestamp = joinTimestamp;
 			this.allowCreation = allowCreation;
 			this.shouldCache = shouldCache;
+		}
 
-			if (allowCreation && !player.isOnline())
-				throw new IllegalArgumentException("Cannot create an account for an offline player.");
+		public UUID getUniqueId() {
+			return uuid;
 		}
 
 		public OfflinePlayer getOfflinePlayer() {
-			return player;
+			return Bukkit.getOfflinePlayer(uuid);
 		}
 
 		public Player getOnlinePlayer() {
-			if (player.isOnline())
+			Player player = Bukkit.getPlayer(uuid);
+			if (player != null && player.isOnline())
 				return player.getPlayer();
-			throw new IllegalStateException("The player " + player.getName() + " is offline.");
+			throw new IllegalStateException("The player " + uuid + " is offline.");
 		}
 
 		public long getJoinTimestamp() {
@@ -333,10 +374,7 @@ public abstract class AbstractPlayersManager implements PlayersManager {
 		}
 
 		public String getDebugPlayerName() {
-			String name = player.getName();
-			if (name == null)
-				name = player.getUniqueId().toString();
-			return name;
+			return uuid.toString();
 		}
 
 		/**

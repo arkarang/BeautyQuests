@@ -112,7 +112,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
 							qu, acc, cat, DescriptionSource.MENU).formatDescription();
 					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
-							&& acc.getQuestDatas(qu).hasFlowDialogs()) {
+							&& acc.getQuestEntry(qu).hasFlowDialogs()) {
 						if (!lore.isEmpty())
 							lore.add(null);
 						lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
@@ -124,7 +124,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 							qu, acc, cat, DescriptionSource.MENU).formatDescription();
 
 					boolean hasDialogs = QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
-							&& acc.getQuestDatas(qu).hasFlowDialogs();
+							&& acc.getQuestEntry(qu).hasFlowDialogs();
 					boolean cancellable =
 							QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
 									&& qu.isCancellable();
@@ -184,7 +184,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 		} else {
 			if (clickType.isRightClick()) {
 				if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled()
-						&& acc.getQuestDatas(qu).hasFlowDialogs()) {
+						&& acc.getQuestEntry(qu).hasFlowDialogs()) {
 					QuestUtils.playPluginSound(player, "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
 					new DialogHistoryGUI(acc, qu, this::reopen).open(player);
 				}

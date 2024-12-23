@@ -4,7 +4,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.players.PlayerAccount;
 import fr.skytasul.quests.api.players.PlayerPoolDatas;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.players.PlayerQuestEntryData;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.Utils;
@@ -24,7 +24,7 @@ public class PlayerAccountImplementation implements PlayerAccount {
 	public static final List<String> FORBIDDEN_DATA_ID = Arrays.asList("identifier", "quests", "pools");
 
 	public final AbstractAccount abstractAcc;
-	protected final Map<Integer, PlayerQuestDatasImplementation> questDatas = new HashMap<>();
+	protected final Map<Integer, PlayerQuestEntryDataImplementation> currentQuests = new HashMap<>();
 	protected final Map<Integer, PlayerPoolDatasImplementation> poolDatas = new HashMap<>();
 	protected final Map<SavableData<?>, Object> additionalDatas = new HashMap<>();
 	protected final int index;
@@ -52,46 +52,46 @@ public class PlayerAccountImplementation implements PlayerAccount {
 	}
 
 	@Override
-	public boolean hasQuestDatas(@NotNull Quest quest) {
-		return questDatas.containsKey(quest.getId());
+	public boolean hasQuestEntry(@NotNull Quest quest) {
+		return currentQuests.containsKey(quest.getId());
 	}
 
 	@Override
-	public @Nullable PlayerQuestDatasImplementation getQuestDatasIfPresent(@NotNull Quest quest) {
-		return questDatas.get(quest.getId());
+	public @Nullable PlayerQuestEntryDataImplementation getQuestEntryIfPresent(@NotNull Quest quest) {
+		return currentQuests.get(quest.getId());
 	}
 
 	@Override
-	public @NotNull PlayerQuestDatasImplementation getQuestDatas(@NotNull Quest quest) {
-		PlayerQuestDatasImplementation datas = questDatas.get(quest.getId());
-		if (datas == null) {
-			datas = BeautyQuests.getInstance().getPlayersManager().createPlayerQuestDatas(this, quest);
-			questDatas.put(quest.getId(), datas);
+	public @NotNull PlayerQuestEntryDataImplementation getQuestEntry(@NotNull Quest quest) {
+		PlayerQuestEntryDataImplementation entry = currentQuests.get(quest.getId());
+		if (entry == null) {
+			entry = BeautyQuests.getInstance().getPlayersManager().createPlayerQuestDatas(this, quest);
+			currentQuests.put(quest.getId(), entry);
 		}
-		return datas;
+		return entry;
 	}
 
 	@Override
-	public @NotNull CompletableFuture<PlayerQuestDatas> removeQuestDatas(@NotNull Quest quest) {
-		return removeQuestDatas(quest.getId());
+	public @NotNull CompletableFuture<PlayerQuestEntryData> removeQuestEntry(@NotNull Quest quest) {
+		return removeQuestEntry(quest.getId());
 	}
 
 	@Override
-	public @NotNull CompletableFuture<PlayerQuestDatas> removeQuestDatas(int id) {
-		PlayerQuestDatasImplementation removed = questDatas.remove(id);
+	public @NotNull CompletableFuture<PlayerQuestEntryData> removeQuestEntry(int id) {
+		PlayerQuestEntryDataImplementation removed = currentQuests.remove(id);
 		if (removed == null)
 			return CompletableFuture.completedFuture(null);
 
 		return BeautyQuests.getInstance().getPlayersManager().playerQuestDataRemoved(removed).thenApply(__ -> removed);
 	}
 
-	protected @Nullable PlayerQuestDatasImplementation removeQuestDatasSilently(int id) {
-		return questDatas.remove(id);
+	protected @Nullable PlayerQuestEntryDataImplementation removeQuestDatasSilently(int id) {
+		return currentQuests.remove(id);
 	}
 
 	@Override
-	public @UnmodifiableView @NotNull Collection<@NotNull PlayerQuestDatas> getQuestsDatas() {
-		return (Collection) questDatas.values();
+	public @UnmodifiableView @NotNull Collection<@NotNull PlayerQuestEntryData> getQuestEntries() {
+		return (Collection) currentQuests.values();
 	}
 
 	@Override
@@ -134,20 +134,20 @@ public class PlayerAccountImplementation implements PlayerAccount {
 
 	@Override
 	public <T> @Nullable T getData(@NotNull SavableData<T> data) {
-		if (!BeautyQuests.getInstance().getPlayersManager().getAccountDatas().contains(data))
-			throw new IllegalArgumentException("The " + data.getId() + " account data has not been registered.");
+		//if (!BeautyQuests.getInstance().getPlayersManager().getAccountDatas().contains(data))
+		//	throw new IllegalArgumentException("The " + data.getId() + " account data has not been registered.");
 		return (T) additionalDatas.getOrDefault(data, data.getDefaultValue());
 	}
 
 	@Override
 	public <T> void setData(@NotNull SavableData<T> data, @Nullable T value) {
-		if (!BeautyQuests.getInstance().getPlayersManager().getAccountDatas().contains(data))
-			throw new IllegalArgumentException("The " + data.getId() + " account data has not been registered.");
+		//if (!BeautyQuests.getInstance().getPlayersManager().getAccountDatas().contains(data))
+		//	throw new IllegalArgumentException("The " + data.getId() + " account data has not been registered.");
 		additionalDatas.put(data, value);
 	}
 
 	@Override
-	public void resetDatas() {
+	public void resetEntries() {
 		additionalDatas.clear();
 	}
 
@@ -203,7 +203,7 @@ public class PlayerAccountImplementation implements PlayerAccount {
 
 	public void serialize(@NotNull ConfigurationSection config) {
 		config.set("identifier", abstractAcc.getIdentifier());
-		config.set("quests", questDatas.isEmpty() ? null : Utils.serializeList(questDatas.values(), PlayerQuestDatasImplementation::serialize));
+		config.set("quests", currentQuests.isEmpty() ? null : Utils.serializeList(currentQuests.values(), PlayerQuestEntryDataImplementation::serialize));
 		config.set("pools", poolDatas.isEmpty() ? null : Utils.serializeList(poolDatas.values(), PlayerPoolDatasImplementation::serialize));
 		additionalDatas.entrySet().forEach(entry -> {
 			config.set(entry.getKey().getId(), entry.getValue());

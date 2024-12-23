@@ -1,7 +1,10 @@
 package fr.skytasul.quests;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import fr.skytasul.quests.players.AbstractPlayersManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -126,25 +129,37 @@ public class QuestsListener implements Listener{
 		}
 	}
 
+	private static final Map<UUID, AbstractPlayersManager.AccountFetchRequest> map = new ConcurrentHashMap<>();
+
+	public static void addAccountRequest(AbstractPlayersManager.AccountFetchRequest request) {
+		map.put(request.getUniqueId(), request);
+	}
+
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e){
 		Player player = e.getPlayer();
 
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " (" + player.getUniqueId().toString() + ") joined the server");
 		// for timing purpose
-
-		if (BeautyQuests.getInstance().loaded && !QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
-			BeautyQuests.getInstance().getPlayersManager().loadPlayer(player);
+		if(map.containsKey(e.getPlayer().getUniqueId())) {
+			AbstractPlayersManager.AccountFetchRequest request = map.remove(e.getPlayer().getUniqueId());
+			if(request != null) {
+				Bukkit.getPluginManager()
+						.callEvent(new PlayerAccountJoinEvent(request.getAccount(), request.isAccountCreated()));
+			}
 		}
+		//if (BeautyQuests.getInstance().loaded && !QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
+		//	BeautyQuests.getInstance().getPlayersManager().loadPlayer(player);
+		//}
 	}
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " left the server"); // for timing purpose
-		if (!QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
-			BeautyQuests.getInstance().getPlayersManager().unloadPlayer(player);
-		}
+		//if (!QuestsConfigurationImplementation.getConfiguration().hookAccounts()) {
+		//	BeautyQuests.getInstance().getPlayersManager().unloadPlayer(player);
+		//}
 	}
 
 	@EventHandler (priority = EventPriority.LOW)

@@ -7,7 +7,7 @@ import fr.skytasul.quests.api.events.PlayerSetStageEvent;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.players.PlayerQuestEntryData;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
@@ -117,8 +117,8 @@ public class QuestBranchImplementation implements QuestBranch {
 
 	@Override
 	public @NotNull String getDescriptionLine(@NotNull PlayerAccount acc, @NotNull DescriptionSource source) {
-		PlayerQuestDatas datas;
-		if (!acc.hasQuestDatas(getQuest()) || (datas = acc.getQuestDatas(getQuest())).getBranch() != getId())
+		PlayerQuestEntryData datas;
+		if (!acc.hasQuestEntry(getQuest()) || (datas = acc.getQuestEntry(getQuest())).getBranch() != getId())
 			throw new IllegalArgumentException("Account does not have this branch launched");
 		if (asyncReward.contains(acc)) return Lang.SCOREBOARD_ASYNC_END.toString();
 		if (datas.isInEndingStages()) {
@@ -144,10 +144,10 @@ public class QuestBranchImplementation implements QuestBranch {
 
 		if (asyncReward.contains(acc))
 			return false;
-		if (!acc.hasQuestDatas(getQuest()))
+		if (!acc.hasQuestEntry(getQuest()))
 			return false;
 
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+		PlayerQuestEntryData datas = acc.getQuestEntry(getQuest());
 		if (datas.getBranch() != getId())
 			return false;
 
@@ -158,8 +158,8 @@ public class QuestBranchImplementation implements QuestBranch {
 	}
 
 	public void remove(@NotNull PlayerAccount acc, boolean end) {
-		if (!acc.hasQuestDatas(getQuest())) return;
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+		if (!acc.hasQuestEntry(getQuest())) return;
+		PlayerQuestEntryData datas = acc.getQuestEntry(getQuest());
 		if (end) {
 			if (datas.isInEndingStages()) {
 				endStages.forEach(x -> x.getStage().end(acc));
@@ -171,7 +171,7 @@ public class QuestBranchImplementation implements QuestBranch {
 	}
 
 	public void start(@NotNull PlayerAccount acc) {
-		acc.getQuestDatas(getQuest()).setBranch(getId());
+		acc.getQuestEntry(getQuest()).setBranch(getId());
 		if (!regularStages.isEmpty()){
 			setPlayerStage(acc, regularStages.get(0));
 		}else {
@@ -184,7 +184,7 @@ public class QuestBranchImplementation implements QuestBranch {
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Next stage for player " + p.getName() + " (coming from " + stage.toString() + ") via " + DebugUtils.stackTraces(1, 3));
 		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
 		@NotNull
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+        PlayerQuestEntryData datas = acc.getQuestEntry(getQuest());
 		if (datas.getBranch() != getId() || (datas.isInEndingStages() && !isEndingStage(stage))
 				|| (!datas.isInEndingStages() && datas.getStage() != getRegularStageId(stage))) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Trying to finish stage " + stage.toString() + " for player " + p.getName() + ", but the player didn't have started it.");
@@ -279,7 +279,7 @@ public class QuestBranchImplementation implements QuestBranch {
 	@Override
 	public void setPlayerStage(@NotNull PlayerAccount acc, @NotNull StageController stage) {
 		Player p = acc.getPlayer();
-		PlayerQuestDatas questDatas = acc.getQuestDatas(getQuest());
+		PlayerQuestEntryData questDatas = acc.getQuestEntry(getQuest());
 		if (questDatas.getBranch() != getId())
 			throw new IllegalStateException("The player is not in the right branch");
 
@@ -296,7 +296,7 @@ public class QuestBranchImplementation implements QuestBranch {
 	@Override
 	public void setPlayerEndingStages(@NotNull PlayerAccount acc) {
 		Player p = acc.getPlayer();
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+		PlayerQuestEntryData datas = acc.getQuestEntry(getQuest());
 		if (datas.getBranch() != getId())
 			throw new IllegalStateException("The player is not in the right branch");
 

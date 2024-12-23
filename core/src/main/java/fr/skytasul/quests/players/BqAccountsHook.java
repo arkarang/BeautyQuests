@@ -36,12 +36,10 @@ public class BqAccountsHook implements Listener {
 
 	@EventHandler
 	public void onAccountUse(AccountUseEvent e) {
-		BeautyQuests.getInstance().getPlayersManager().loadPlayer(e.getPlayer());
 	}
 
 	@EventHandler
 	public void onAccountLeave(AccountLeaveEvent e) {
-		BeautyQuests.getInstance().getPlayersManager().unloadPlayer(e.getPlayer());
 	}
 	
 }

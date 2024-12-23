@@ -11,7 +11,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
+import fr.skytasul.quests.api.players.PlayerQuestEntryData;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
@@ -59,14 +59,14 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 
 	@Override
 	public @Nullable QuestBranchImplementation getPlayerBranch(@NotNull PlayerAccount acc) {
-		if (!acc.hasQuestDatas(quest)) return null;
-		return branches.get(acc.getQuestDatas(quest).getBranch());
+		if (!acc.hasQuestEntry(quest)) return null;
+		return branches.get(acc.getQuestEntry(quest).getBranch());
 	}
 
 	@Override
 	public boolean hasBranchStarted(@NotNull PlayerAccount acc, @NotNull QuestBranch branch) {
-		if (!acc.hasQuestDatas(quest)) return false;
-		return acc.getQuestDatas(quest).getBranch() == branch.getId();
+		if (!acc.hasQuestEntry(quest)) return false;
+		return acc.getQuestEntry(quest).getBranch() == branch.getId();
 	}
 
 	/**
@@ -82,14 +82,14 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 	}
 
 	public void startPlayer(@NotNull PlayerAccount acc) {
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+		PlayerQuestEntryData datas = acc.getQuestEntry(getQuest());
 		datas.resetQuestFlow();
 		datas.setStartingTime(System.currentTimeMillis());
 		branches.get(0).start(acc);
 	}
 
 	public void remove(@NotNull PlayerAccount acc) {
-		if (!acc.hasQuestDatas(quest)) return;
+		if (!acc.hasQuestEntry(quest)) return;
 		QuestBranchImplementation branch = getPlayerBranch(acc);
 		if (branch != null) branch.remove(acc, true);
 	}

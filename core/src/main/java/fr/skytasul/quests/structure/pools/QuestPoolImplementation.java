@@ -205,7 +205,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		if (notDoneQuests.isEmpty()) { // all quests completed
 			if (!redoAllowed) return false;
 			return quests.stream().anyMatch(quest -> quest.isRepeatable() && quest.canStart(p, false));
-		}else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return false;
+		}else if (acc.getQuestEntries().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest())).count() >= maxQuests) return false;
 
 		return notDoneQuests.stream().anyMatch(quest -> quest.canStart(p, false));
 	}
@@ -258,7 +258,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 			notCompleted = replenishQuests(datas);
 			if (notCompleted.isEmpty())
 				return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_ALL_COMPLETED.toString()));
-		} else if (acc.getQuestsDatas().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest()))
+		} else if (acc.getQuestEntries().stream().filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest()))
 				.count() >= maxQuests) {
 			// player has too much quests in this pool to be able to start one more
 			return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_MAX_QUESTS.format(this)));

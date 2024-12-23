@@ -37,7 +37,7 @@ import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.players.PlayersManagerDB;
 import fr.skytasul.quests.players.PlayersManagerYAML;
 import fr.skytasul.quests.structure.QuestImplementation;
-import fr.skytasul.quests.utils.Database;
+import fr.skytasul.quests.utils.HikariDataSourceWrapper;
 import fr.skytasul.quests.utils.QuestUtils;
 import fr.skytasul.quests.utils.nms.NMS;
 
@@ -228,16 +228,17 @@ public class CommandsAdmin implements OrphanCommand {
 	public void migrateDatas(BukkitCommandActor actor) {
 		if (!(QuestsPlugin.getPlugin().getPlayersManager() instanceof PlayersManagerYAML))
 			throw new CommandErrorException("§cYou can't migrate YAML datas to a DB system if you are already using the DB system.");
-
+		actor.reply("§cThis command is disabled for now.");
+		/*
 		QuestUtils.runAsync(() -> {
 			actor.reply("§aConnecting to the database.");
-			Database db = null;
+			HikariDataSourceWrapper db = null;
 			try {
 				// no try-with-resource because the database is used in another thread
-				db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
+				db = new HikariDataSourceWrapper(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
 				db.testConnection();
 				actor.reply("§aConnection to database etablished.");
-				final Database fdb = db;
+				final HikariDataSourceWrapper fdb = db;
 				QuestUtils.runSync(() -> {
 					actor.reply("§aStarting migration...");
 					try {
@@ -255,6 +256,8 @@ public class CommandsAdmin implements OrphanCommand {
 					db.close();
 			}
 		});
+
+		 */
 	}
 
 	@Subcommand ("setItem")

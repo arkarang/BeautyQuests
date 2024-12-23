@@ -2,6 +2,8 @@ package fr.skytasul.quests;
 
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
+import com.minepalm.library.PalmLibrary;
+import com.minepalm.library.database.impl.internal.MySQLDB;
 import com.tchristofferson.configupdater.ConfigUpdater;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsAPIProvider;
@@ -25,11 +27,12 @@ import fr.skytasul.quests.scoreboards.ScoreboardManager;
 import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.structure.QuestsManagerImplementation;
 import fr.skytasul.quests.structure.pools.QuestPoolsManagerImplementation;
-import fr.skytasul.quests.utils.Database;
+import fr.skytasul.quests.utils.HikariDataSourceWrapper;
 import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
 import fr.skytasul.quests.utils.compatibility.Post1_16;
 import fr.skytasul.quests.utils.logger.LoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
+import kr.reo.quest.ReoQuestModule;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.DrilldownPie;
 import org.bstats.charts.SimplePie;
@@ -74,7 +77,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private String loadedLanguage;
 
-	private Database db;
+	//private HikariDataSourceWrapper db;
 
 	private YamlConfiguration data;
 	private File dataFile;
@@ -316,7 +319,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			return map;
 		}));
 		metrics.addCustomChart(new SimplePie("lang", () -> loadedLanguage));
-		metrics.addCustomChart(new SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
+		//metrics.addCustomChart(new SimplePie("storage", () -> db == null ? "YAML (files)" : "SQL (database)"));
 		metrics.addCustomChart(new SingleLineChart("quests", () -> quests.getQuestsAmount()));
 		metrics.addCustomChart(new SimplePie("quests_amount_slice", () -> {
 			int size = quests.getQuestsAmount();
@@ -385,19 +388,21 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			config.init();
 
 			ConfigurationSection dbConfig = config.getConfig().getConfigurationSection("database");
-			if (dbConfig.getBoolean("enabled")) {
-				db = null;
-				try {
-					db = new Database(dbConfig);
-					db.testConnection();
-					logger.info("Connection to database etablished.");
-				}catch (Exception ex) {
-					db = null;
-					throw new LoadingException("Connection to database has failed.", ex);
-				}
-			}
+			//if (dbConfig.getBoolean("enabled")) {
+			//	db = null;
+			//	try {
+			//		db = new HikariDataSourceWrapper(dbConfig);
+			//		db.testConnection();
+			//		logger.info("Connection to database etablished.");
+			//	}catch (Exception ex) {
+			//		db = null;
+			//		throw new LoadingException("Connection to database has failed.", ex);
+			//	}
+			//}
 
-			players = db == null ? new PlayersManagerYAML() : new PlayersManagerDB(db);
+			ReoQuestModule.onEnable(this);
+			MySQLDB palmLibrary = ReoQuestModule.inst().provideQuestDatabase();
+			players = new PlayersManagerDB(dbConfig, palmLibrary);
 
 			/*				static initialization				*/
 			if (init) {
@@ -501,8 +506,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 
 		try{
-			if (db == null && backupDir != null)
-				createPlayerDatasBackup(backupDir, (PlayersManagerYAML) players);
+			//if (db == null && backupDir != null)
+			//	createPlayerDatasBackup(backupDir, (PlayersManagerYAML) players);
 
 			players.load();
 		}catch (Exception ex) {
@@ -540,12 +545,13 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}
 		}
 
-		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				players.loadPlayer(p);
-			}
-			loaded = true;
-		}, 1L);
+		loaded = true;
+		//Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
+		//	for (Player p : Bukkit.getOnlinePlayers()) {
+		//		players.loadPlayer(p);
+		//	}
+		//	loaded = true;
+		//}, 1L);
 	}
 
 	public void saveAllConfig(boolean unload) throws Exception {
@@ -584,11 +590,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private void resetDatas(){
 		quests = null;
 		pools = null;
-		try {
-			if (db != null) db.close();
-		}catch (Exception ex) {
-			logger.severe("An error occurred while closing database connection.", ex);
-		}
 		players = null;
 		//HandlerList.unregisterAll(this);
 		loaded = false;
@@ -781,9 +782,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		return data;
 	}
 
-	public @Nullable Database getBQDatabase() {
-		return db;
-	}
 
 	public @Nullable ScoreboardManager getScoreboardManager() {
 		return scoreboards;

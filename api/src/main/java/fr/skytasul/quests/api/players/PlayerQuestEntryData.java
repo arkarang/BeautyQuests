@@ -2,12 +2,14 @@ package fr.skytasul.quests.api.players;
 
 import java.util.Map;
 import java.util.stream.Stream;
+
+import kr.reo.quest.QuestEntryRecord;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 
-public interface PlayerQuestDatas {
+public interface PlayerQuestEntryData {
 
 	int getQuestID();
 
@@ -63,5 +65,7 @@ public interface PlayerQuestDatas {
 	void resetQuestFlow();
 
 	Stream<StageController> getQuestFlowStages();
+
+	QuestEntryRecord toRecord();
 
 }
